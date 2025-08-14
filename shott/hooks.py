@@ -43,10 +43,13 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_js = {"Payment Request" : "public/js/payment_request.js"}
+doctype_list_js = {"Purchase Invoice" : "public/js/purchase_invoice_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+
+# After Migrate Hooks
+after_migrate = 'shott.migrate.after_migrations'
 
 # Svg Icons
 # ------------------
@@ -137,13 +140,14 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Payment Request": {
+        "validate" :[
+            			"shott.api.fetch_custom_details_on_save",
+                        "shott.api.update_is_payment_req_created_in_po_pi"
+					]
+	},
+}
 
 # Scheduled Tasks
 # ---------------
