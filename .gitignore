@@ -6,4 +6,6 @@ tags
 node_modules
 __pycache__
 
-shott_settings
+shott/public/js/supplier_quotation.js
+shott/shott/doctype/po_attachments/
+shott/shott/doctype/shott_settings/

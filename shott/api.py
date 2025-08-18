@@ -1,6 +1,8 @@
 import frappe
 import erpnext
+from frappe.desk.form.load import get_attachments
 
+# ----------------------- Payment Cycle Customisation -----------------------------
 @frappe.whitelist()
 def createBulkPaymentRequests(selectedPIs):
     selectedPIs = frappe.parse_json(selectedPIs)
@@ -15,7 +17,7 @@ def createBulkPaymentRequests(selectedPIs):
         doc.reference_name = pi['name']
         doc.party_type = 'Supplier',
         doc.party = pi['supplier']
-        doc.grand_total = pi['grand_total']
+        doc.grand_total = pi['outstanding_amount']
         doc.outstanding_amount = pi['outstanding_amount']
         doc.currency = pi['party_account_currency']
         doc.party_account_currency = pi['party_account_currency']
