@@ -145,7 +145,9 @@ doc_events = {
         "validate" :[
             			"shott.api.fetch_custom_details_on_save",
                         "shott.api.update_is_payment_req_created_in_po_pi"
-					]
+					],
+		"on_cancel" : "shott.api.revert_is_payment_req_created_in_po_pi",
+        "on_trash" : "shott.api.revert_is_payment_req_created_in_po_pi",
 	},
 }
 

@@ -60,7 +60,7 @@ def fetch_custom_details_on_save(self, method = None):
         self.custom_attachments = custom_attachments
 
     elif reference_doctype == 'Purchase Order':
-        po_doc = frappe.get_doc('Purchase Order', reference_doctype)
+        po_doc = frappe.get_doc('Purchase Order', reference_docname)
         self.custom_expense_head = po_doc.items[0].expense_account
         self.custom_description =  po_doc.items[0].description
         self.custom_reason_for_approval_or_rejection = po_doc.custom_reason_for_approval_or_rejection
@@ -72,3 +72,9 @@ def update_is_payment_req_created_in_po_pi(self, method=None):
         if self.reference_name != None:
             frappe.db.set_value(self.reference_doctype, self.reference_name, "custom_payment_request_created", "Yes")
             frappe.msgprint("Is Payment Request Created is updated to YES in {0} {1}".format(self.reference_doctype, self.reference_name), alert=True)
+
+def revert_is_payment_req_created_in_po_pi(self, method=None):
+    if self.reference_doctype == "Purchase Invoice" or self.reference_doctype == "Purchase Order":
+        if self.reference_name != None:
+            frappe.db.set_value(self.reference_doctype, self.reference_name, "custom_payment_request_created", "")
+            frappe.msgprint("Is Payment Request Created is updated {0} {1}".format(self.reference_doctype, self.reference_name), alert=True)
