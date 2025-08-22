@@ -43,7 +43,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Payment Request" : "public/js/payment_request.js"}
+doctype_js = {"Payment Request" : "public/js/payment_request.js", "Supplier Quotation" : "public/js/supplier_quotation.js"}
 doctype_list_js = {"Purchase Invoice" : "public/js/purchase_invoice_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -149,6 +149,14 @@ doc_events = {
 		"on_cancel" : "shott.api.revert_is_payment_req_created_in_po_pi",
         "on_trash" : "shott.api.revert_is_payment_req_created_in_po_pi",
 	},
+    "Purchase Order": {
+        "validate" : [
+            "shott.api.validate_po_conditions",
+        ], 
+        "after_insert" : [
+            "shott.api.fetch_sq_attachments_in_po"
+        ]
+    }
 }
 
 # Scheduled Tasks

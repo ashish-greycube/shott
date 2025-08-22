@@ -83,6 +83,29 @@ def after_migrations():
                 options = '\nYes\nNo',
                 allow_on_submit = 1
             )
+        ],
+
+        "Purchase Order Item" : [
+            dict(
+                fieldname = 'custom_supplier_quotation_ref',
+                fieldtype = 'Link',
+                label = _('Supplier Quotation Reference'),
+                is_custom_field = 1,
+                is_system_generated = 0,
+                insert_after = 'blanket_order_rate',
+                options = 'Supplier Quotation',
+            )
+        ],
+
+        "Supplier Quotation" : [
+            dict(
+                fieldname = 'custom_change_validity_btn',
+                fieldtype = "Button",
+                label = _('Change Validity'),
+                is_custom_field = 1,
+                is_system_generated = 0,
+                insert_after = 'valid_till',
+            )
         ]
     }
 
