@@ -86,7 +86,7 @@ def validate_po_conditions(self, method=None):
         for item in self.items:
             # If Current User Role Is Purchase Master Manager Then Do not Check Any Conditions
             if item.material_request == None and item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
-                purchase_master_manager_role = frappe.db.get_single_value("Shott Settings", "purchase_master_manager")
+                purchase_master_manager_role = frappe.db.get_single_value("Shott Settings", "allow_create_po_without_sq")
                 user_roles = frappe.get_roles(frappe.session.user)
                 print(user_roles)
                 if purchase_master_manager_role in user_roles:
