@@ -16,22 +16,22 @@
   },
   {
    "fieldname": "allow_change_to_valid_date_in_sq",
-   "fieldtype": "Link",
+   "fieldtype": "Table MultiSelect",
    "label": "Allow Change To Valid Date In SQ",
-   "options": "Role"
+   "options": "Shott Settings Role"
   },
   {
    "fieldname": "allow_create_po_without_sq",
-   "fieldtype": "Link",
+   "fieldtype": "Table MultiSelect",
    "label": "Allow Create PO Without SQ",
-   "options": "Role"
+   "options": "Shott Settings Role"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-26 12:34:32.292557",
+ "modified": "2025-08-28 10:37:07.570284",
  "modified_by": "Administrator",
  "module": "shott",
  "name": "Shott Settings",

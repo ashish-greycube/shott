@@ -86,10 +86,13 @@ def validate_po_conditions(self, method=None):
         for item in self.items:
             # If Current User Role Is Purchase Master Manager Then Do not Check Any Conditions
             if item.material_request == None and item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
-                purchase_master_manager_role = frappe.db.get_single_value("Shott Settings", "allow_create_po_without_sq")
+                setting_doc = frappe.get_doc("Shott Settings")
+                purchase_master_manager_role = []
+                for role in setting_doc.allow_create_po_without_sq:
+                    purchase_master_manager_role.append(role.role)
                 user_roles = frappe.get_roles(frappe.session.user)
-                print(user_roles)
-                if purchase_master_manager_role in user_roles:
+                print(user_roles, purchase_master_manager_role)
+                if all(element in user_roles for element in purchase_master_manager_role):
                     return
                 else:
                     frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
@@ -154,3 +157,19 @@ def change_valid_date_in_supplier_quotation(updated_date, transaction_date, doct
             frappe.db.set_value(doctype, docname, 'status', "Submitted")
         else:
             frappe.db.set_value(doctype, docname, 'status', "Expired")
+            
+def validate_po_item_with_sq_items(self, method:None):
+    if len(self.items) > 0:
+        for item in self.items:
+            is_valid_sq = False
+            if item.custom_supplier_quotation_ref != None or item.supplier_quotation != None:
+                supplier_quotation = item.supplier_quotation if item.supplier_quotation != None else item.custom_supplier_quotation_ref
+                sq_doc = frappe.get_doc("Supplier Quotation", supplier_quotation)
+                if sq_doc != None:
+                    for sq_item in sq_doc.items:
+                        if sq_item.item_code == item.item_code:
+                            is_valid_sq = True
+                            break
+                    if is_valid_sq == False:
+                        frappe.throw("At Row {0}: Item {1} is not in Supplier Quotation Items {2}".format(item.idx, item.item_code, frappe.utils.get_link_to_form("Supplier Quotation", supplier_quotation)))
+                        

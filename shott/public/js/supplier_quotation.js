@@ -7,15 +7,20 @@ frappe.ui.form.on('Supplier Quotation', {
             }, 200);
         }
 
-        frappe.db.get_single_value("Shott Settings", "allow_change_to_valid_date_in_sq")
-            .then(res => {
-                if (frm.doc.status == "Expired" && frm.doc.custom_quotation_status == "Selected" && frappe.user_roles.includes(res)) {
-                    frm.set_df_property('custom_change_validity_btn', 'hidden', 0)
-                }
-                else if (frm.doc.status != "Expired" || frm.doc.custom_quotation_status != "Selected" || frappe.user_roles.includes(res) === false) {
-                    frm.set_df_property('custom_change_validity_btn', 'hidden', 1)
-                }
-            })
+        frappe.db.get_doc("Shott Settings").then(doc => {
+            let allowed_roles = doc.allow_change_to_valid_date_in_sq
+            let res = []
+            for (let r in allowed_roles) {
+                res.push(allowed_roles[r].role)
+            }
+            // console.log(res, frappe.user_roles.every(r => frappe.user_roles.includes(r)))
+            if (frm.doc.status == "Expired" && frm.doc.custom_quotation_status == "Selected" && frappe.user_roles.every(r => frappe.user_roles.includes(r))) {
+                frm.set_df_property('custom_change_validity_btn', 'hidden', 0)
+            }
+            else if (frm.doc.status != "Expired" || frm.doc.custom_quotation_status != "Selected" || frappe.user_roles.includes(res) === false) {
+                frm.set_df_property('custom_change_validity_btn', 'hidden', 1)
+            }
+        })
 
         if (frm.is_dirty() == 1) {
             frm.set_df_property('custom_sq_attachment', 'hidden', 1)

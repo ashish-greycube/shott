@@ -152,6 +152,7 @@ doc_events = {
     "Purchase Order": {
         "validate" : [
             "shott.api.validate_po_conditions",
+            "shott.api.validate_po_item_with_sq_items"
         ], 
         "after_insert" : [
             "shott.api.fetch_sq_attachments_in_po"
