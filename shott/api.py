@@ -172,4 +172,21 @@ def validate_po_item_with_sq_items(self, method:None):
                             break
                     if is_valid_sq == False:
                         frappe.throw("At Row {0}: Item {1} is not in Supplier Quotation Items {2}".format(item.idx, item.item_code, frappe.utils.get_link_to_form("Supplier Quotation", supplier_quotation)))
-                        
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def filter_supplier_quotation_as_per_item_selected(doctype, txt, searchfield, start, page_len, filters):
+    sq_list = frappe.db.sql(
+        '''
+        SELECT sq.name 
+        FROM `tabSupplier Quotation` sq 
+        INNER JOIN `tabSupplier Quotation Item` sqi 
+        ON sq.name = sqi.parent 
+        WHERE sq.status = 'Submitted' 
+        AND sq.custom_quotation_status = "Selected" 
+        AND sqi.item_code = "{0}"
+        AND sq.name  like  %(txt)s ;
+        '''.format(filters.get("item")), {"txt": "%%%s%%" % txt,}
+    )
+
+    return sq_list
