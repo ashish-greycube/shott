@@ -7,7 +7,8 @@ frappe.ui.form.on("Purchase Order", {
                 filters : {
                     "item" : row.item_code,
                     "custom_quotation_status": "Selected",
-                    "status" : "Submitted"
+                    "status" : "Submitted",
+                    "cost_center" : row.cost_center
                 },
             };
         })

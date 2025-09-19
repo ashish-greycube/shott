@@ -1,10 +1,12 @@
 frappe.ui.form.on('Supplier Quotation', {
     refresh(frm) {
         if (frm.doc.status == "Expired" || frm.doc.custom_quotation_status == "Pending" || frm.doc.custom_quotation_status == "Rejected") {
+            console.log("Hiding Button")
             setTimeout(() => {
-                frm.remove_custom_button('Purchase Order', 'Create');
-                frm.remove_custom_button('Quotation', 'Create');
-            }, 200);
+                frm.clear_custom_buttons();
+                // frm.remove_custom_button('Purchase Order', 'Create');
+                // frm.remove_custom_button('Quotation', 'Create');
+            }, 100);
         }
 
         frappe.db.get_doc("Shott Settings").then(doc => {

@@ -185,8 +185,9 @@ def filter_supplier_quotation_as_per_item_selected(doctype, txt, searchfield, st
         WHERE sq.status = 'Submitted' 
         AND sq.custom_quotation_status = "Selected" 
         AND sqi.item_code = "{0}"
+        AND sqi.cost_center = "{1}"
         AND sq.name  like  %(txt)s ;
-        '''.format(filters.get("item")), {"txt": "%%%s%%" % txt,}
+        '''.format(filters.get("item"), filters.get("cost_center")), {"txt": "%%%s%%" % txt,}
     )
 
     return sq_list
