@@ -1,32 +1,16 @@
 frappe.ui.form.on('Supplier Quotation', {
-    onload_post_render(frm) {
-        if (frm.doc.status == "Expired" || frm.doc.custom_quotation_status == "Pending" || frm.doc.custom_quotation_status == "Rejected") {
-            frm.clear_custom_buttons();
-        }
-    },
-
     custom_quotation_status(frm) {
-        if (frm.doc.status == "Expired" || frm.doc.custom_quotation_status == "Pending" || frm.doc.custom_quotation_status == "Rejected") {
-            console.log("Hiding Button in 3s")
-            setTimeout(() => {
-                console.log("Hiding Button")
-                frm.clear_custom_buttons();
-                // frm.remove_custom_button('Purchase Order', 'Create');
-                // frm.remove_custom_button('Quotation', 'Create');
-            }, 100);
-        }
+        setTimeout(() => {
+            hide_custom_button(frm)
+            console.log("Hiding Button On Status Change")
+        }, 500);
     },
 
     refresh(frm) {
-        if (frm.doc.status == "Expired" || frm.doc.custom_quotation_status == "Pending" || frm.doc.custom_quotation_status == "Rejected") {
-            console.log("Hiding Button in 3s")
-            setTimeout(() => {
-                console.log("Hiding Button")
-                frm.clear_custom_buttons();
-                // frm.remove_custom_button('Purchase Order', 'Create');
-                // frm.remove_custom_button('Quotation', 'Create');
-            }, 100);
-        }
+        setTimeout(() => {
+            hide_custom_button(frm)
+            console.log("Hiding Button")
+        }, 500);
 
         frappe.db.get_doc("Shott Settings").then(doc => {
             let allowed_roles = doc.allow_change_to_valid_date_in_sq
@@ -87,3 +71,9 @@ frappe.ui.form.on('Supplier Quotation', {
         d.show()
     }
 });
+
+function hide_custom_button(frm) {
+    if (frm.doc.status == "Expired" || frm.doc.custom_quotation_status == "Pending" || frm.doc.custom_quotation_status == "Rejected") {
+        frm.clear_custom_buttons();
+    }
+}
