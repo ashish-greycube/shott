@@ -7,6 +7,17 @@ frappe.ui.form.on('Supplier Quotation', {
     },
 
     refresh(frm) {
+        if (frm.doc.status == "Submitted") {
+            setTimeout(() => {
+                frm.add_custom_button("Shott Purchase Order", function () {
+                    frappe.model.open_mapped_doc({
+                        method: "shott.api.make_purchase_order",
+                        frm: cur_frm,
+                    });
+                }, "Create")
+            }, 200);
+        }
+        
         setTimeout(() => {
             hide_custom_button(frm)
             console.log("Hiding Button")

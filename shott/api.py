@@ -1,5 +1,9 @@
 import frappe
 import erpnext
+import json
+from frappe import _
+from frappe.utils import flt
+from frappe.model.mapper import get_mapped_doc
 from frappe.desk.form.load import get_attachments
 from frappe import _
 
@@ -84,14 +88,42 @@ def revert_is_payment_req_created_in_po_pi(self, method=None):
 def validate_po_conditions(self, method=None):
     if len(self.items) > 0:
         for item in self.items:
+            print(item.item_code, item.item_group)
+            # If No SQ Then First Check For Exception Item
+            if item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
+                print("Checking for exception item........")
+                setting_doc = frappe.get_doc("Shott Settings")
+                allowed_groups = []
+                for group in setting_doc.allowed_item_groups_without_sq:
+                    allowed_groups.append(group.item_group)  
+
+                print("allowed groups are : ",allowed_groups)    
+                exception_items = frappe.db.get_all(
+                    doctype = "Item",
+                    filters = {"item_group": ["in", allowed_groups]},
+                    fields = ['item_code']
+                )   
+                allowed_items = []
+               
+                if len(exception_items) > 0:
+                    for r in exception_items:
+                        allowed_items.append(r.item_code)
+                    print("allowed items are : ",allowed_items)
+                    for d in allowed_items:
+                        if item.item_code == d:
+                            print("Items Matched")
+                            return
+                    # else:
+                    frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+
             # If Current User Role Is Purchase Master Manager Then Do not Check Any Conditions
             if item.material_request == None and item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
+                print("Checking for master role........")
                 setting_doc = frappe.get_doc("Shott Settings")
                 purchase_master_manager_role = []
                 for role in setting_doc.allow_create_po_without_sq:
                     purchase_master_manager_role.append(role.role)
                 user_roles = frappe.get_roles(frappe.session.user)
-                print(user_roles, purchase_master_manager_role)
                 if all(element in user_roles for element in purchase_master_manager_role):
                     return
                 else:
@@ -191,3 +223,58 @@ def filter_supplier_quotation_as_per_item_selected(doctype, txt, searchfield, st
     )
 
     return sq_list
+
+@frappe.whitelist()
+def make_purchase_order(source_name, target_doc=None, args=None):
+	if args is None:
+		args = {}
+	if isinstance(args, str):
+		args = json.loads(args)
+
+	def set_missing_values(source, target):
+		target.run_method("set_missing_values")
+		target.run_method("get_schedule_dates")
+		target.run_method("calculate_taxes_and_totals")
+
+	def update_item(obj, target, source_parent):
+		target.stock_qty = flt(obj.qty) * flt(obj.conversion_factor)
+
+	def select_item(d):
+		if d.custom_to_create_po == 1:
+			print(d)
+			filtered_items = args.get("filtered_children", [])
+			child_filter = d.name in filtered_items if filtered_items else True
+			return child_filter
+    
+	doclist = get_mapped_doc(
+		"Supplier Quotation",
+		source_name,
+		{
+			"Supplier Quotation": {
+				"doctype": "Purchase Order",
+				"field_no_map": ["transaction_date"],
+				"validation": {
+					"docstatus": ["=", 1],
+				},
+			},
+			"Supplier Quotation Item": {
+				"doctype": "Purchase Order Item",
+				"field_map": [
+					["name", "supplier_quotation_item"],
+					["parent", "supplier_quotation"],
+					["material_request", "material_request"],
+					["material_request_item", "material_request_item"],
+					["sales_order", "sales_order"],
+				],
+				"postprocess": update_item,
+				"condition": select_item,
+			},
+			"Purchase Taxes and Charges": {
+				"doctype": "Purchase Taxes and Charges",
+			},
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist

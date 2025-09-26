@@ -14,3 +14,16 @@ frappe.ui.form.on("Purchase Order", {
         })
     }
 })
+frappe.ui.form.on("Purchase Order Item", {
+    custom_supplier_quotation_ref: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn]
+        frappe.db.get_value("Supplier Quotation", row.custom_supplier_quotation_ref, "supplier")
+        .then(res => {
+            frm.set_value("supplier", res.message.supplier)
+            frappe.show_alert({
+                "message": "Supplier is set from Supplier Quotation",
+                "indicator" : "green"
+            })
+        })
+    }
+});

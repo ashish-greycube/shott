@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "allow_create_po_without_sq",
+  "allowed_item_groups_without_sq",
   "column_break_rdvu",
   "allow_change_to_valid_date_in_sq"
  ],
@@ -25,13 +26,19 @@
    "fieldtype": "Table MultiSelect",
    "label": "Allow Create PO Without SQ",
    "options": "Shott Settings Role"
+  },
+  {
+   "fieldname": "allowed_item_groups_without_sq",
+   "fieldtype": "Table MultiSelect",
+   "label": "Allowed Item Groups Without SQ",
+   "options": "Shott Settings Item Group"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-19 13:02:24.320891",
+ "modified": "2025-09-25 11:18:37.235017",
  "modified_by": "Administrator",
  "module": "shott",
  "name": "Shott Settings",
