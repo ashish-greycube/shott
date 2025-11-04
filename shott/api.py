@@ -142,9 +142,43 @@ def validate_po_conditions(self, method=None):
                 item.custom_supplier_quotation_ref = item.supplier_quotation
             
             # If PO Is Created Directly From MR Then Find Its Existing SQ And If Find Set It To Custom SQ Ref Field.
-            if item.material_request != None and item.supplier_quotation == None:
+            if item.material_request != None and item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
                 supplier_quotation_ref = frappe.db.get_value("Supplier Quotation Item", {'material_request' : item.material_request}, 'parent')
-                if supplier_quotation_ref != None:
+                if supplier_quotation_ref == None:
+                    # First Check For Exception Item
+                    setting_doc = frappe.get_doc("Shott Settings")
+                    allowed_groups = []
+                    for group in setting_doc.allowed_item_groups_without_sq:
+                        allowed_groups.append(group.item_group)  
+    
+                    exception_items = frappe.db.get_all(
+                        doctype = "Item",
+                        filters = {"item_group": ["in", allowed_groups]},
+                        fields = ['item_code']
+                    )   
+
+                    allowed_items = []
+                    if len(exception_items) > 0:
+                        for r in exception_items:
+                            allowed_items.append(r.item_code)
+                        for d in allowed_items:
+                            if item.item_code == d:
+                                return
+                    else:
+                        # Item is not in Exception List So Check For Master Role
+                        purchase_master_manager_role = []
+                        for role in setting_doc.allow_create_po_without_sq:
+                            purchase_master_manager_role.append(role.role)
+                        user_roles = frappe.get_roles(frappe.session.user)
+                        if purchase_master_manager_role == []:
+                            frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+                        elif all(element in user_roles for element in purchase_master_manager_role):
+                            return
+                        else:
+                            frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+                    frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+
+                elif supplier_quotation_ref != None:
                     item.custom_supplier_quotation_ref = supplier_quotation_ref
                 # elif supplier_quotation_ref == None:
                 #     frappe.throw("Supplier Quotation Is Not Available!")
@@ -218,6 +252,7 @@ def filter_supplier_quotation_as_per_item_selected(doctype, txt, searchfield, st
         ON sq.name = sqi.parent 
         WHERE sq.status = 'Submitted' 
         AND sq.custom_quotation_status = "Selected" 
+        AND sqi.custom_to_create_po = 1
         AND sqi.item_code = "{0}"
         AND sqi.cost_center = "{1}"
         AND sq.name  like  %(txt)s ;
