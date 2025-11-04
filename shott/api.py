@@ -230,6 +230,7 @@ def validate_po_item_with_sq_items(self, method:None):
     if len(self.items) > 0:
         for item in self.items:
             is_valid_sq = False
+            is_create_po = False
             if item.custom_supplier_quotation_ref != None or item.supplier_quotation != None:
                 supplier_quotation = item.supplier_quotation if item.supplier_quotation != None else item.custom_supplier_quotation_ref
                 sq_doc = frappe.get_doc("Supplier Quotation", supplier_quotation)
@@ -237,7 +238,11 @@ def validate_po_item_with_sq_items(self, method:None):
                     for sq_item in sq_doc.items:
                         if sq_item.item_code == item.item_code:
                             is_valid_sq = True
+                            if sq_item.custom_to_create_po == 1:
+                                is_create_po = True
                             break
+                    if is_create_po == False:
+                        frappe.throw("At Row {0}: Item {1} is not marked to Create PO in Supplier Quotation Items {2}".format(item.idx, item.item_code, frappe.utils.get_link_to_form("Supplier Quotation", supplier_quotation)))
                     if is_valid_sq == False:
                         frappe.throw("At Row {0}: Item {1} is not in Supplier Quotation Items {2}".format(item.idx, item.item_code, frappe.utils.get_link_to_form("Supplier Quotation", supplier_quotation)))
 
