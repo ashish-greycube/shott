@@ -171,12 +171,12 @@ def validate_po_conditions(self, method=None):
                             purchase_master_manager_role.append(role.role)
                         user_roles = frappe.get_roles(frappe.session.user)
                         if purchase_master_manager_role == []:
-                            frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+                            frappe.throw("You are not allowed to create Purchase Order Without Supplier Quotation Ref.")
                         elif all(element in user_roles for element in purchase_master_manager_role):
                             return
                         else:
-                            frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
-                    frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+                            frappe.throw("You are not allowed to create Purchase Order Without Supplier Quotation Ref.")
+                    frappe.throw("You are not allowed to create Purchase Order Without Supplier Quotation Ref.")
 
                 elif supplier_quotation_ref != None:
                     item.custom_supplier_quotation_ref = supplier_quotation_ref
