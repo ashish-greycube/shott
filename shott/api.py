@@ -235,6 +235,11 @@ def validate_po_item_with_sq_items(self, method:None):
                 supplier_quotation = item.supplier_quotation if item.supplier_quotation != None else item.custom_supplier_quotation_ref
                 sq_doc = frappe.get_doc("Supplier Quotation", supplier_quotation)
                 if sq_doc != None:
+                    # Validation For Supplier In Item Ref Is Same As PO Supplier.
+                    if self.supplier != sq_doc.supplier:
+                        frappe.throw("At Row {0}: Supplier of given SQ Ref for item {1} is not same as current supplier {2}. Please correct this.".format(item.idx, item.item_code, self.supplier))
+                        
+                    # Validation For Is Line Item Is Available In SQ Ref + Is Create PO Is Checked For Selected SQ Ref
                     for sq_item in sq_doc.items:
                         if sq_item.item_code == item.item_code:
                             is_valid_sq = True
