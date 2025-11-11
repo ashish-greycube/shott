@@ -126,9 +126,17 @@ def validate_po_conditions(self, method=None):
                 user_roles = frappe.get_roles(frappe.session.user)
                 if purchase_master_manager_role == []:
                     frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
-                elif all(element in user_roles for element in purchase_master_manager_role):
-                    print("You have master role...Go ahead")
-                    return
+                elif purchase_master_manager_role != []:
+                    isMaster = False
+                    for r in purchase_master_manager_role:
+                        for ur in user_roles:
+                            if ur == r:
+                                isMaster = True
+                    if isMaster == True:
+                        print("You have master role...Go ahead")
+                        return
+                    elif isMaster == False:
+                        frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
                 else:
                     frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
 
