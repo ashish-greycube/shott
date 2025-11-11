@@ -113,8 +113,8 @@ def validate_po_conditions(self, method=None):
                         if item.item_code == d:
                             print("Items Matched")
                             return
-                    # else:
-                    frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
+                    if setting_doc.allow_create_po_without_sq == []:
+                        frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
 
             # If Current User Role Is Purchase Master Manager Then Do not Check Any Conditions
             if item.material_request == None and item.supplier_quotation == None and item.custom_supplier_quotation_ref == None:
@@ -127,6 +127,7 @@ def validate_po_conditions(self, method=None):
                 if purchase_master_manager_role == []:
                     frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
                 elif all(element in user_roles for element in purchase_master_manager_role):
+                    print("You have master role...Go ahead")
                     return
                 else:
                     frappe.throw("You are not allowed to create Purchase Order Without Material Request or Supplier Quotation Ref.")
