@@ -19,7 +19,7 @@
    "fieldname": "allow_change_to_valid_date_in_sq",
    "fieldtype": "Table MultiSelect",
    "label": "Allow Change To Valid Date In SQ",
-   "options": "Shott Settings Role"
+   "options": "Shott Settings Valid Date Role"
   },
   {
    "fieldname": "allow_create_po_without_sq",
@@ -38,7 +38,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-25 11:18:37.235017",
+ "modified": "2025-11-11 14:36:53.538475",
  "modified_by": "Administrator",
  "module": "shott",
  "name": "Shott Settings",
