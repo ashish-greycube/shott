@@ -61,6 +61,15 @@ def after_migrations():
 
         "Purchase Order" : [
             dict(
+                fieldname = 'custom_sq_attachments',
+                fieldtype = 'Table',
+                label = _('SQ Attachments'),
+                is_custom_field = 1,
+                is_system_generated = 0,
+                insert_after = 'amended_from',
+                options = 'PO Attachments',
+            ),
+            dict(
                 fieldname = 'custom_payment_request_created',
                 fieldtype = 'Select',
                 label = _('Is Payment Request Created?'),

@@ -210,8 +210,8 @@ def fetch_sq_attachments_in_po(self,method=None):
             print(attachments)
             if len(attachments) > 0:
                 for attach_item in attachments:
-                    self.append("custom_sq_attachment_", {
-                        'attachment' : attach_item.file_url
+                    self.append("custom_sq_attachments", {
+                        'attach' : attach_item.file_url
                     })
                     self.save(ignore_permissions=True)
 
